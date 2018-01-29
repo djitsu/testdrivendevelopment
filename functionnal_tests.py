@@ -1,4 +1,6 @@
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+import time
 import unittest
 
 
@@ -18,18 +20,33 @@ class NewVisitorTest(unittest.TestCase):
         
         # does ths page title mention that's it a to do list?
         self.assertIn('To-Do',self.browser.title)
-        self.fail('Finish the test')
+        header_text = self.browser.find_element_by_tag_name('h1').text
+        self.assertIn('To-Do', header_text)
         
         # you can add a to do item
-        
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertEqual(
+                inputbox.get_attribute('placeholder'),
+                'Enter a to-do item'
+        )
+
         # you type "buy peacock feathers" into a text box
-        
-        # when you click enter the page updates and tou have 
+        inputbox.send_keys('Buy peacock feathers')
+
+        # when you click enter the page updates and you have 
         # "1: Buy peackock feathers" as an item in a to-do list
+        inputbox.send_keys(Keys.ENTER)
+        time.sleep(1)
+
+        table = self.browser.find_element_by_id('id_list_table')
+        rows = table.find_elements_by_tag_name('tr')
+        self.assertTrue(
+                any(row.text == '1: Buy peacock feathers' for row in rows)
+        )
         
         # There is an item to invite you to add another item
         # you enter "Use peacock feathers to make a fly"
-        
+        self.fail('Finish the test!')
         # The page updates again an now you can see both items on the list
         
         # Is the site will remember this list? you can see that website generate a unique 
